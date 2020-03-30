@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.15...3.17)
-project(agoNetwork)
+project(
+        agoNetwork
+        VERSION 0.1.0
+        DESCRIPTION "ago network library"
+)
 
 # include whole files to the project
 include_directories(${CMAKE_SOURCE_DIR})
@@ -35,14 +39,12 @@ target_sources(agoNetwork
         PRIVATE
         lib/network/zmq/zmqContext.cpp
         lib/network/router/router.cpp
-        lib/network/dealer/dealer.cpp
         lib/network/socket/socket.cpp
         lib/network/zmq/zmqContext.h
         lib/network/zmq/zhelpers.hpp
         PUBLIC
         lib/concepts/concepts.h
         lib/network/router/router.h
-        lib/network/dealer/dealer.h
         lib/network/socket/socket.h
         )
 
@@ -56,5 +58,5 @@ target_link_libraries(agoNetwork PUBLIC ${ZeroMQ_LIBRARY} pthread)
 #------------------------------------------------------------------------------------
 
 # Unit Test
-#add_executable(unitTest unitTest.cpp)
-#target_link_libraries(unitTest agoNetwork)
+add_executable(unitTest unitTest.cpp)
+target_link_libraries(unitTest agoNetwork)
