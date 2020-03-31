@@ -6,7 +6,7 @@ project(
 )
 
 # include whole files to the project
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "-fconcepts")
@@ -41,10 +41,12 @@ target_sources(agoNetwork
         lib/network/router/router.cpp
         lib/network/socket/socket.cpp
         lib/network/zmq/zmqContext.h
+        lib/network/dealer/dealer.cpp
         lib/network/zmq/zhelpers.hpp
         PUBLIC
         lib/concepts/concepts.h
         lib/network/router/router.h
+        lib/network/dealer/dealer.h
         lib/network/socket/socket.h
         )
 
@@ -56,7 +58,3 @@ target_include_directories(agoNetwork PUBLIC ${ZeroMQ_INCLUDE_DIR})
 ## at the 0mq library to our link directive
 target_link_libraries(agoNetwork PUBLIC ${ZeroMQ_LIBRARY} pthread)
 #------------------------------------------------------------------------------------
-
-# Unit Test
-add_executable(unitTest unitTest.cpp)
-target_link_libraries(unitTest agoNetwork)

@@ -2,7 +2,7 @@
 // Created by Amin Rezaei on 3/29/20.
 // Copyright (c) 2020. All rights reserved.
 // Contact amin.rezaei.sc@gmail.com
-// Last edit on 3/30/20 08:12
+// Last edit on 3/31/20 15:20
 //
 
 #include <lib/network/socket/socket.h>
@@ -55,7 +55,7 @@ namespace agoNetwork {
         switch (_socketType) {
             case socketType::router: {
                 const auto remoteAddress = s_recv(*_socket);
-                const auto emptyFrame = s_recv(*_socket);
+                s_recv(*_socket);
                 const auto message = s_recv(*_socket);
                 return {remoteAddress, message};
             }
@@ -76,6 +76,16 @@ namespace agoNetwork {
                 return {};
             }
         }
+    }
+
+    std::string socket::
+    name() noexcept {
+        return _socketName;
+    }
+
+    std::string socket::
+    address() noexcept {
+        return _socketAddress;
     }
 
     tcpSocket::
@@ -107,7 +117,19 @@ namespace agoNetwork {
     void tcpSocket::
     connect() const noexcept {
         if (_socketType == socketType::dealer) {
-            _socket->connect("tcp://" + _socketAddress);
+            try {
+                s_set_id(*_socket);
+                _socket->connect("tcp://" + _socketAddress);
+            } catch (zmq::error_t &error) {
+                std::cout
+                        << "Error in connecting to tcp socket "
+                        << _socketName
+                        << " on address "
+                        << _socketAddress
+                        << ", what?"
+                        << error.what()
+                        << std::endl;
+            }
         }
     }
 
@@ -131,6 +153,11 @@ namespace agoNetwork {
         return _socketName;
     }
 
+    std::string tcpSocket::
+    address() noexcept {
+        return _socketAddress;
+    }
+
     ipcSocket::
     ipcSocket(
             std::string socketName,
@@ -149,10 +176,16 @@ namespace agoNetwork {
     bind() const noexcept {
         if (_socketType == socketType::router) {
             try {
-                _socket->bind("ipc://" + _socketAddress);
+                _socket->bind("ipc://" + _socketAddress + ".ipc");
             } catch (zmq::error_t &error) {
-                std::cout << "Error in binding to ipc socket " << _socketName << " on address " << _socketAddress
-                          << ", what? " << error.what() << std::endl;
+                std::cout
+                        << "Error in binding to ipc socket "
+                        << _socketName
+                        << " on address "
+                        << _socketAddress
+                        << ", what? "
+                        << error.what()
+                        << std::endl;
             }
         }
     }
@@ -160,7 +193,20 @@ namespace agoNetwork {
     void ipcSocket::
     connect() const noexcept {
         if (_socketType == socketType::dealer) {
-            _socket->connect("ipc://" + _socketAddress);
+            try {
+                s_set_id(*_socket);
+                _socket->connect("ipc://" + _socketAddress);
+            }
+            catch (zmq::error_t &error) {
+                std::cout
+                        << "Error in connecting to tcp socket "
+                        << _socketName
+                        << " on address "
+                        << _socketAddress
+                        << ", what?"
+                        << error.what()
+                        << std::endl;
+            }
         }
     }
 
@@ -177,6 +223,16 @@ namespace agoNetwork {
     void ipcSocket::
     send(const std::string &address, const std::string &string) noexcept {
         socket::send(address, string);
+    }
+
+    std::string ipcSocket::
+    name() noexcept {
+        return _socketName;
+    }
+
+    std::string ipcSocket::
+    address() noexcept {
+        return _socketAddress;
     }
 
     inprocSocket::
@@ -197,10 +253,16 @@ namespace agoNetwork {
     bind() const noexcept {
         if (_socketType == socketType::router) {
             try {
-                _socket->bind("inproc://" + _socketAddress);
+                _socket->bind("inproc://" + _socketAddress + ".inproc");
             } catch (zmq::error_t &error) {
-                std::cout << "Error in binding to inproc socket " << _socketName << " on address " << _socketAddress
-                          << ", what? " << error.what() << std::endl;
+                std::cout
+                        << "Error in binding to inproc socket "
+                        << _socketName
+                        << " on address "
+                        << _socketAddress
+                        << ", what? "
+                        << error.what()
+                        << std::endl;
             }
         }
     }
@@ -208,7 +270,19 @@ namespace agoNetwork {
     void inprocSocket::
     connect() const noexcept {
         if (_socketType == socketType::dealer) {
-            _socket->connect("inproc://" + _socketAddress);
+            try {
+                s_set_id(*_socket);
+                _socket->connect("inproc://" + _socketAddress);
+            } catch (zmq::error_t &error) {
+                std::cout
+                        << "Error in connecting to tcp socket "
+                        << _socketName
+                        << " on address "
+                        << _socketAddress
+                        << ", what?"
+                        << error.what()
+                        << std::endl;
+            }
         }
     }
 
@@ -225,6 +299,16 @@ namespace agoNetwork {
     void inprocSocket::
     send(const std::string &address, const std::string &string) noexcept {
         socket::send(address, string);
+    }
+
+    std::string inprocSocket::
+    name() noexcept {
+        return _socketName;
+    }
+
+    std::string inprocSocket::
+    address() noexcept {
+        return _socketAddress;
     }
 
     std::string literals::operator ""_tcp(const char *name, size_t) noexcept {

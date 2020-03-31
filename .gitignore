@@ -4,6 +4,9 @@ cmake-build-debug
 # .idea
 .idea
 
+#docs
+docs
+
 # Prerequisites
 *.d
 
